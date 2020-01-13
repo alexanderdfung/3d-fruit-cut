@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.shape.Box;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -27,7 +29,9 @@ public class Main extends Application {
         box.setDepth(200.0);
         box.setTranslateX(300);
         box.setTranslateY(300);
-        box.setFill(Color.DARKRED);
+        PhongMaterial textureMaterial = new PhongMaterial();
+        textureMaterial.setDiffuseColor(Color.RED);
+        box.setMaterial(textureMaterial);
         Group root = new Group(box);
         Scene scene = new Scene(root, 600, 600);
         stage.setTitle("Drawing a Box");
