@@ -27,28 +27,25 @@ public class Main extends Application {
         Box shape = box; String title = "Moving Box";
         // Sphere shape = sphere; String title = "Moving Sphere";
 
-        Transform transform = new Rotate(65, new Point3D(0, 1, 0));
-        shape.getTransforms().add(transform);
-
         class RotationGroup extends Group {
             Rotate rotate;
             Transform transform = new Rotate();
 
-            private void RotateX (int angle) {
+            private void RotateX(int angle) {
                 rotate = new Rotate(angle, Rotate.X_AXIS);
                 transform = transform.createConcatenation(rotate);
                 this.getTransforms().clear();
                 this.getTransforms().addAll(transform);
             }
 
-            private void RotateY (int angle) {
+            private void RotateY(int angle) {
                 rotate = new Rotate(angle, Rotate.Y_AXIS);
                 transform = transform.createConcatenation(rotate);
                 this.getTransforms().clear();
                 this.getTransforms().addAll(transform);
             }
 
-            private void RotateZ (int angle) {
+            private void RotateZ(int angle) {
                 rotate = new Rotate(angle, Rotate.Z_AXIS);
                 transform = transform.createConcatenation(rotate);
                 this.getTransforms().clear();
@@ -59,19 +56,21 @@ public class Main extends Application {
         PhongMaterial textureMaterial = new PhongMaterial();
         textureMaterial.setDiffuseColor(Color.LIGHTBLUE);
         shape.setMaterial(textureMaterial);
-        shape.setTranslateX(0);
-        shape.setTranslateY(0);
-        shape.setTranslateZ(300);
 
         RotationGroup group = new RotationGroup();
         group.getChildren().addAll(shape);
+        group.setTranslateX(WIDTH / 2);
+        group.setTranslateY(HEIGHT / 2);
+        group.setTranslateZ(300);
 
-        Camera camera = new PerspectiveCamera(true);
+        Camera camera = new PerspectiveCamera(); // fixedEyeAtCameraZero: true
+        /*
         camera.setTranslateX(0);
         camera.setTranslateY(0);
         camera.setTranslateZ(-500);
         camera.setNearClip(1);
         camera.setFarClip(1);
+         */
 
         Scene scene = new Scene(group, WIDTH, HEIGHT);
         scene.setFill(Color.WHITE);
@@ -80,10 +79,22 @@ public class Main extends Application {
         stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
                 case W:
-                    camera.setTranslateZ(camera.getTranslateZ() + 150);
+                    group.setTranslateZ(group.getTranslateZ() + 150);
                     break;
                 case S:
-                    camera.setTranslateZ(camera.getTranslateZ() - 150);
+                    group.setTranslateZ(group.getTranslateZ() - 150);
+                    break;
+                case D:
+                    group.RotateX(10);
+                    break;
+                case A:
+                    group.RotateX(-10);
+                    break;
+                case Q:
+                    group.RotateY(10);
+                    break;
+                case E:
+                    group.RotateY(-10);
                     break;
             }
         });
