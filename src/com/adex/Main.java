@@ -1,6 +1,8 @@
 package com.adex;
 
 import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Point3D;
 import javafx.scene.Camera;
 import javafx.scene.PerspectiveCamera;
@@ -19,6 +21,59 @@ public class Main extends Application {
     private static final double WIDTH = 1500.0;
     private static final double HEIGHT = 800.0;
 
+    private double AnchorX, AnchorY;
+    private double AnchorAngleX = 0;
+    private double AnchorAngleY = 0;
+    private final DoubleProperty AngleX = new SimpleDoubleProperty();
+    private final DoubleProperty AngleY = new SimpleDoubleProperty();
+
+    private void InitMouseControl(RotationGroup group, Scene scene) {
+        Rotate XRotate, YRotate;
+        group.getTransforms().addAll(
+                XRotate = new Rotate(0, Rotate.X_AXIS),
+                YRotate = new Rotate(0, Rotate.Y_AXIS)
+        );
+        XRotate.angleProperty().bind(AngleX);
+        YRotate.angleProperty().bind(AngleY);
+
+        scene.setOnMousePressed(event -> {
+            AnchorX = event.getSceneX();
+            AnchorY = event.getSceneY();
+            AnchorAngleX = AngleX.get();
+            AnchorAngleY = AngleY.get();
+        });
+
+        scene.setOnMouseDragged(event -> {
+            AngleX.set(AnchorAngleX - (AnchorY - event.getSceneY()));
+            AngleY.set(AnchorAngleY + (AnchorX - event.getSceneX()));
+        });
+    }
+
+    class RotationGroup extends Group {
+        Rotate rotate;
+        Transform transform = new Rotate();
+
+        private void RotateX(int angle) {
+            rotate = new Rotate(angle, Rotate.X_AXIS);
+            transform = transform.createConcatenation(rotate);
+            this.getTransforms().clear();
+            this.getTransforms().addAll(transform);
+        }
+
+        private void RotateY(int angle) {
+            rotate = new Rotate(angle, Rotate.Y_AXIS);
+            transform = transform.createConcatenation(rotate);
+            this.getTransforms().clear();
+            this.getTransforms().addAll(transform);
+        }
+
+        private void RotateZ(int angle) {
+            rotate = new Rotate(angle, Rotate.Z_AXIS);
+            transform = transform.createConcatenation(rotate);
+            this.getTransforms().clear();
+            this.getTransforms().addAll(transform);
+        }
+    }
     @Override
     public void start(Stage stage) {
         Box box = new Box(100, 300, 20);
@@ -26,32 +81,6 @@ public class Main extends Application {
 
         Box shape = box; String title = "Moving Box";
         // Sphere shape = sphere; String title = "Moving Sphere";
-
-        class RotationGroup extends Group {
-            Rotate rotate;
-            Transform transform = new Rotate();
-
-            private void RotateX(int angle) {
-                rotate = new Rotate(angle, Rotate.X_AXIS);
-                transform = transform.createConcatenation(rotate);
-                this.getTransforms().clear();
-                this.getTransforms().addAll(transform);
-            }
-
-            private void RotateY(int angle) {
-                rotate = new Rotate(angle, Rotate.Y_AXIS);
-                transform = transform.createConcatenation(rotate);
-                this.getTransforms().clear();
-                this.getTransforms().addAll(transform);
-            }
-
-            private void RotateZ(int angle) {
-                rotate = new Rotate(angle, Rotate.Z_AXIS);
-                transform = transform.createConcatenation(rotate);
-                this.getTransforms().clear();
-                this.getTransforms().addAll(transform);
-            }
-        }
 
         PhongMaterial textureMaterial = new PhongMaterial();
         textureMaterial.setDiffuseColor(Color.LIGHTBLUE);
@@ -75,6 +104,8 @@ public class Main extends Application {
         Scene scene = new Scene(group, WIDTH, HEIGHT);
         scene.setFill(Color.WHITE);
         scene.setCamera(camera);
+
+        InitMouseControl(group, scene);
 
         stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
