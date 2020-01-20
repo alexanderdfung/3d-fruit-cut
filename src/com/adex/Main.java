@@ -3,22 +3,18 @@ package com.adex;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.geometry.Point3D;
-import javafx.scene.Camera;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.shape.Box;
-import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
+import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-
 
 public class Main extends Application {
     private static final double WIDTH = 1500.0;
@@ -88,20 +84,33 @@ public class Main extends Application {
     private Box PrepareBox() {
         PhongMaterial material = new PhongMaterial();
         material.setDiffuseMap(new Image(getClass().getResourceAsStream("/apple.jpg")));
+        material.setSpecularColor(Color.valueOf("#424242")); // Can also use specular map
         Box box = new Box(600, 140, 300);
         box.setMaterial(material);
         return box;
     }
 
+    private Node[] PrepareLightSource() {
+//        AmbientLight ambientLight = new AmbientLight();
+//        ambientLight.setColor(Color.GREEN);
+//        return ambientLight;
+        PointLight pointLight = new PointLight();
+        pointLight.setColor(Color.WHITE);
+        pointLight.getTransforms().add(new Translate(WIDTH / 2, HEIGHT / 2 -50, 400));
+        Sphere sphere = new Sphere(20);
+        sphere.getTransforms().addAll(pointLight.getTransforms());
+        return new Node[]{pointLight, sphere};
+    }
+
     @Override
     public void start(Stage stage) {
         Box box = PrepareBox();
-        Sphere sphere = new Sphere(150);
-
-        Box shape = box; String title = "Applesque Rectangular Prism";
+        String title = "Applesque Rectangular Prism";
 
         RotationGroup group = new RotationGroup();
-        group.getChildren().addAll(shape);
+        group.getChildren().addAll(box);
+        group.getChildren().addAll(PrepareLightSource());
+
         group.setTranslateX(WIDTH / 2);
         group.setTranslateY(HEIGHT / 2);
         group.setTranslateZ(300);
