@@ -8,6 +8,7 @@ import javafx.scene.Camera;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.shape.Box;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -27,12 +28,13 @@ public class Main extends Application {
     private final DoubleProperty AngleX = new SimpleDoubleProperty();
     private final DoubleProperty AngleY = new SimpleDoubleProperty();
 
-    private void InitMouseControl(RotationGroup group, Scene scene) {
+    private void InitMouseControl(RotationGroup group, Scene scene, Stage stage) {
         Rotate XRotate, YRotate;
         group.getTransforms().addAll(
                 XRotate = new Rotate(0, Rotate.X_AXIS),
                 YRotate = new Rotate(0, Rotate.Y_AXIS)
         );
+
         XRotate.angleProperty().bind(AngleX);
         YRotate.angleProperty().bind(AngleY);
 
@@ -41,11 +43,17 @@ public class Main extends Application {
             AnchorY = event.getSceneY();
             AnchorAngleX = AngleX.get();
             AnchorAngleY = AngleY.get();
+            // System.out.println(String.format("%f, %f", event.getSceneX(), event.getSceneY()));
         });
 
         scene.setOnMouseDragged(event -> {
             AngleX.set(AnchorAngleX - (AnchorY - event.getSceneY()));
             AngleY.set(AnchorAngleY + (AnchorX - event.getSceneX()));
+        });
+
+        stage.addEventHandler(ScrollEvent.SCROLL, event -> {
+            double delta = event.getDeltaY();
+            group.setTranslateZ(group.getTranslateZ() + delta);
         });
     }
 
@@ -74,17 +82,20 @@ public class Main extends Application {
             this.getTransforms().addAll(transform);
         }
     }
+
+    private Box PrepareBox() {
+        PhongMaterial material = new PhongMaterial(Color.LIGHTYELLOW);
+        Box box = new Box(600, 140, 300);
+        box.setMaterial(material);
+        return box;
+    }
+
     @Override
     public void start(Stage stage) {
-        Box box = new Box(100, 300, 20);
+        Box box = PrepareBox();
         Sphere sphere = new Sphere(150);
 
         Box shape = box; String title = "Moving Box";
-        // Sphere shape = sphere; String title = "Moving Sphere";
-
-        PhongMaterial textureMaterial = new PhongMaterial();
-        textureMaterial.setDiffuseColor(Color.LIGHTBLUE);
-        shape.setMaterial(textureMaterial);
 
         RotationGroup group = new RotationGroup();
         group.getChildren().addAll(shape);
@@ -105,7 +116,7 @@ public class Main extends Application {
         scene.setFill(Color.WHITE);
         scene.setCamera(camera);
 
-        InitMouseControl(group, scene);
+        InitMouseControl(group, scene, stage);
 
         stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             switch (event.getCode()) {
