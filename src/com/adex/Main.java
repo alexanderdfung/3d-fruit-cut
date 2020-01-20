@@ -97,6 +97,7 @@ public class Main extends Application {
         PointLight pointLight = new PointLight();
         pointLight.setColor(Color.WHITE);
         pointLight.getTransforms().add(new Translate(WIDTH / 2, HEIGHT / 2 -50, 400));
+
         Sphere sphere = new Sphere(20);
         sphere.getTransforms().addAll(pointLight.getTransforms());
         return new Node[]{pointLight, sphere};
@@ -109,7 +110,8 @@ public class Main extends Application {
 
         RotationGroup group = new RotationGroup();
         group.getChildren().addAll(box);
-        group.getChildren().addAll(PrepareLightSource());
+        Node[] lightArray = PrepareLightSource();
+        group.getChildren().addAll(lightArray);
 
         group.setTranslateX(WIDTH / 2);
         group.setTranslateY(HEIGHT / 2);
@@ -150,6 +152,13 @@ public class Main extends Application {
                 case E:
                     group.RotateY(-10);
                     break;
+                case J:
+                    lightArray[0].setTranslateX(lightArray[0].getTranslateX() + 10);
+                    lightArray[1].setTranslateX(lightArray[1].getTranslateX() + 10);
+                    break;
+                case K:
+                    lightArray[0].setTranslateX(lightArray[0].getTranslateX() - 10);
+                    lightArray[1].setTranslateX(lightArray[1].getTranslateX() - 10);
             }
         });
 
