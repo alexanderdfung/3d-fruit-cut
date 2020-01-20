@@ -7,6 +7,7 @@ import javafx.geometry.Point3D;
 import javafx.scene.Camera;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.shape.Box;
@@ -17,6 +18,7 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
+
 
 public class Main extends Application {
     private static final double WIDTH = 1500.0;
@@ -84,7 +86,8 @@ public class Main extends Application {
     }
 
     private Box PrepareBox() {
-        PhongMaterial material = new PhongMaterial(Color.LIGHTYELLOW);
+        PhongMaterial material = new PhongMaterial();
+        material.setDiffuseMap(new Image(getClass().getResourceAsStream("/apple.jpg")));
         Box box = new Box(600, 140, 300);
         box.setMaterial(material);
         return box;
@@ -95,7 +98,7 @@ public class Main extends Application {
         Box box = PrepareBox();
         Sphere sphere = new Sphere(150);
 
-        Box shape = box; String title = "Moving Box";
+        Box shape = box; String title = "Applesque Rectangular Prism";
 
         RotationGroup group = new RotationGroup();
         group.getChildren().addAll(shape);
